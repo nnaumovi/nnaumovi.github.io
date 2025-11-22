@@ -51,8 +51,8 @@ let defaultTeams = [
   ]}
 ];
 
-// Actual working teams
-let teams = JSON.parse(JSON.stringify(defaultTeams)); // deep copy
+// Working teams
+let teams = JSON.parse(JSON.stringify(defaultTeams));
 
 /*********************************************
  * LOCAL STORAGE HELPERS
@@ -97,8 +97,6 @@ function computeRankings() {
         team: team.name,
         teamRef: team,
         memberRef: member,
-        teamPoints: Number(member.teamPoints) || 0,
-        personalPoints: Number(member.personalPoints) || 0,
         totalScore
       });
     });
@@ -145,9 +143,9 @@ function renderPersonTable(individuals) {
         <td>${i+1}</td>
         <td><input type="text" class="name-input" data-id="${p.id}" value="${p.name}"></td>
         <td><select class="team-select" data-id="${p.id}">${options}</select></td>
-        <td><input type="number" class="team-input" data-id="${p.id}" value="${p.teamPoints}"></td>
-        <td><input type="number" class="pers-input" data-id="${p.id}" value="${p.personalPoints}"></td>
-        <td>${p.totalScore}</td>
+        <td><input type="number" class="team-input" data-id="${p.id}" value="${p.memberRef.teamPoints}"></td>
+        <td><input type="number" class="pers-input" data-id="${p.id}" value="${p.memberRef.personalPoints}"></td>
+        <td class="total-cell" data-id="${p.id}">${p.totalScore}</td>
       </tr>
     `);
   });
@@ -165,7 +163,6 @@ function addListeners(individuals) {
       const person = individuals.find(p => p.id === input.dataset.id);
       person.memberRef.name = input.value;
       saveData();
-      render();
     });
   });
 
@@ -176,12 +173,13 @@ function addListeners(individuals) {
 
       // Remove from old team
       person.teamRef.members = person.teamRef.members.filter(m => m.id !== person.id);
+
       // Add to new team
       const newTeam = teams.find(t => t.name === sel.value);
       newTeam.members.push(person.memberRef);
 
       saveData();
-      render();
+      render(); // re-render table to update team display
     });
   });
 
@@ -190,8 +188,9 @@ function addListeners(individuals) {
     input.addEventListener("input", () => {
       const person = individuals.find(p => p.id === input.dataset.id);
       person.memberRef.teamPoints = Number(input.value) || 0;
+      updateTotalCell(person.id);
       saveData();
-      render();
+      renderTeamTable(computeRankings().teamRankings); // update team totals
     });
   });
 
@@ -200,10 +199,19 @@ function addListeners(individuals) {
     input.addEventListener("input", () => {
       const person = individuals.find(p => p.id === input.dataset.id);
       person.memberRef.personalPoints = Number(input.value) || 0;
+      updateTotalCell(person.id);
       saveData();
-      render();
     });
   });
+}
+
+// Update total score cell for a single person
+function updateTotalCell(id) {
+  const person = teams.flatMap(t => t.members).find(m => m.id === id);
+  if (!person) return;
+  const total = (Number(person.teamPoints) || 0) + (Number(person.personalPoints) || 0);
+  const cell = document.querySelector(`.total-cell[data-id="${id}"]`);
+  if (cell) cell.textContent = total;
 }
 
 /*********************************************
@@ -212,7 +220,6 @@ function addListeners(individuals) {
 document.getElementById("reset-btn")?.addEventListener("click", () => {
   if (!confirm("Are you sure you want to reset the scoreboard? This cannot be undone.")) return;
 
-  // Reset teams to default and save
   teams = JSON.parse(JSON.stringify(defaultTeams));
   saveData();
   render();
