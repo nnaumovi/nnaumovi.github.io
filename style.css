@@ -1,58 +1,60 @@
 /* GLOBAL */
 body {
   font-family: "Inter", Arial, sans-serif;
-  background: #f3f4f7;
+  background: #faf4e8; /* soft cream */
   margin: 0;
   padding: 40px;
-  color: #333;
+  color: #4b3a2f; /* warm brown */
 }
 
 /* HEADERS */
 h1 {
   text-align: center;
   margin-bottom: 40px;
-  font-size: 2.4rem;
-  font-weight: 700;
-  color: #222;
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #7b3f00; /* pumpkin brown */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 h2 {
   margin-top: 40px;
-  font-size: 1.8rem;
-  color: #444;
-  border-left: 5px solid #4A90E2;
-  padding-left: 10px;
+  font-size: 1.9rem;
+  color: #8a4b1a; /* rustic orange-brown */
+  border-left: 6px solid #d67f2e; /* fall orange */
+  padding-left: 12px;
 }
 
-/* TABLE LAYOUT */
+/* TABLE CONTAINER */
 table {
   width: 95%;
   max-width: 900px;
   margin: 30px auto;
   border-collapse: separate;
   border-spacing: 0;
-  background: #fff;
-  border-radius: 12px;
+  background: #fffdf8; /* soft parchment */
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(121, 70, 25, 0.15); /* warm brown shadow */
 }
 
 /* TABLE HEADER */
 thead {
-  background: #4A90E2;
+  background: linear-gradient(90deg, #d67f2e, #b35c1a);
   color: white;
 }
 
 th {
-  padding: 14px 12px;
+  padding: 16px 14px;
   font-size: 1rem;
   text-align: left;
+  letter-spacing: 0.5px;
 }
 
 /* TABLE BODY */
 td {
-  padding: 12px 12px;
-  border-bottom: 1px solid #e8e8e8;
+  padding: 14px 14px;
+  border-bottom: 1px solid #f0e2d0;
 }
 
 tr:last-child td {
@@ -60,7 +62,7 @@ tr:last-child td {
 }
 
 tbody tr:hover {
-  background: #f5f9ff;
+  background: #fff4e0; /* light fall orange */
 }
 
 /* INPUTS */
@@ -68,21 +70,21 @@ input[type="text"],
 input[type="number"],
 select {
   width: 120px;
-  padding: 6px 8px;
-  border: 1px solid #bbb;
+  padding: 7px 9px;
+  border: 1px solid #c7a98b; /* warm tan */
   border-radius: 6px;
   font-size: 0.95rem;
-  background: #f9f9f9;
-  transition: 0.15s;
+  background: #fdf8f2;
+  transition: 0.15s ease;
 }
 
 input[type="text"]:focus,
 input[type="number"]:focus,
 select:focus {
   outline: none;
-  border-color: #4A90E2;
+  border-color: #d67f2e; /* fall orange */
   background: #fff;
-  box-shadow: 0 0 0 2px rgba(74,144,226,0.2);
+  box-shadow: 0 0 0 2px rgba(214,127,46,0.25);
 }
 
 /* RANK NUMBER STYLING */
@@ -90,20 +92,21 @@ td:nth-child(1) {
   font-weight: 700;
   text-align: center;
   width: 50px;
+  color: #5e3b1f;
 }
 
-/* Gold, Silver, Bronze ranks */
+/* Thanksgiving-themed rank colors */
 tbody tr:nth-child(1) td:nth-child(1) {
-  color: #d4a637;
+  color: #c47f26; /* golden pumpkin */
 }
 tbody tr:nth-child(2) td:nth-child(1) {
-  color: #8892a0;
+  color: #8c6a4a; /* soft walnut */
 }
 tbody tr:nth-child(3) td:nth-child(1) {
-  color: #cd7f32;
+  color: #b56b2a; /* bronze pumpkin */
 }
 
-/* MOBILE RESPONSIVENESS */
+/* MOBILE */
 @media (max-width: 700px) {
   table {
     width: 100%;
@@ -113,6 +116,6 @@ tbody tr:nth-child(3) td:nth-child(1) {
   input[type="text"],
   input[type="number"],
   select {
-    width: 90px;
+    width: 95px;
   }
 }
