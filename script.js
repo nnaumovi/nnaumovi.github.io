@@ -1,13 +1,17 @@
 /*********************************************
+ * UNIQUE ID GENERATOR
+ *********************************************/
+function createId() {
+  return "id-" + Math.random().toString(36).substr(2, 9);
+}
+
+/*********************************************
  * LOCAL STORAGE HELPERS
  *********************************************/
-
-// Save entire data structure
 function saveData() {
   localStorage.setItem("thanksgivingScoreboard", JSON.stringify(teams));
 }
 
-// Load existing data if it exists
 function loadData() {
   const saved = localStorage.getItem("thanksgivingScoreboard");
   if (saved) {
@@ -21,53 +25,52 @@ function loadData() {
 
 
 /*********************************************
- * INITIAL DATA (only used if no save exists)
+ * INITIAL DATA (only used if no saved data)
  *********************************************/
 let teams = [
   { name: "Team 1", members: [ 
-    {name:"A1",teamPoints:0,personalPoints:0},
-    {name:"A2",teamPoints:0,personalPoints:0},
-    {name:"A3",teamPoints:0,personalPoints:0}
+    {id:createId(), name:"A1", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"A2", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"A3", teamPoints:0, personalPoints:0}
   ]},
   { name: "Team 2", members: [
-    {name:"B1",teamPoints:0,personalPoints:0},
-    {name:"B2",teamPoints:0,personalPoints:0},
-    {name:"B3",teamPoints:0,personalPoints:0}
+    {id:createId(), name:"B1", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"B2", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"B3", teamPoints:0, personalPoints:0}
   ]},
   { name: "Team 3", members: [
-    {name:"C1",teamPoints:0,personalPoints:0},
-    {name:"C2",teamPoints:0,personalPoints:0},
-    {name:"C3",teamPoints:0,personalPoints:0}
+    {id:createId(), name:"C1", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"C2", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"C3", teamPoints:0, personalPoints:0}
   ]},
   { name: "Team 4", members: [
-    {name:"D1",teamPoints:0,personalPoints:0},
-    {name:"D2",teamPoints:0,personalPoints:0},
-    {name:"D3",teamPoints:0,personalPoints:0}
+    {id:createId(), name:"D1", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"D2", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"D3", teamPoints:0, personalPoints:0}
   ]},
   { name: "Team 5", members: [
-    {name:"E1",teamPoints:0,personalPoints:0},
-    {name:"E2",teamPoints:0,personalPoints:0},
-    {name:"E3",teamPoints:0,personalPoints:0}
+    {id:createId(), name:"E1", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"E2", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"E3", teamPoints:0, personalPoints:0}
   ]},
   { name: "Team 6", members: [
-    {name:"F1",teamPoints:0,personalPoints:0},
-    {name:"F2",teamPoints:0,personalPoints:0},
-    {name:"F3",teamPoints:0,personalPoints:0}
+    {id:createId(), name:"F1", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"F2", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"F3", teamPoints:0, personalPoints:0}
   ]},
   { name: "Team 7", members: [
-    {name:"G1",teamPoints:0,personalPoints:0},
-    {name:"G2",teamPoints:0,personalPoints:0},
-    {name:"G3",teamPoints:0,personalPoints:0}
+    {id:createId(), name:"G1", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"G2", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"G3", teamPoints:0, personalPoints:0}
   ]},
   { name: "Team 8", members: [
-    {name:"H1",teamPoints:0,personalPoints:0},
-    {name:"H2",teamPoints:0,personalPoints:0},
-    {name:"H3",teamPoints:0,personalPoints:0}
+    {id:createId(), name:"H1", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"H2", teamPoints:0, personalPoints:0},
+    {id:createId(), name:"H3", teamPoints:0, personalPoints:0}
   ]}
 ];
 
-// Load saved data (if any)
-loadData();
+loadData(); // overwrite defaults if saved version exists
 
 
 /*********************************************
@@ -85,12 +88,10 @@ function computeRankings() {
   teams.forEach(team => {
     team.members.forEach(member => {
       individuals.push({
-        name: member.name,
+        ...member,
         team: team.name,
         teamRef: team,
         memberRef: member,
-        teamPoints: Number(member.teamPoints),
-        personalPoints: Number(member.personalPoints),
         totalScore: Number(member.teamPoints) + Number(member.personalPoints)
       });
     });
@@ -103,7 +104,7 @@ function computeRankings() {
 
 
 /*********************************************
- * RENDERING
+ * RENDER
  *********************************************/
 function render() {
   const { teamRankings, individuals } = computeRankings();
@@ -130,7 +131,7 @@ function renderPersonTable(individuals) {
   tbody.innerHTML = "";
 
   individuals.forEach((p, i) => {
-    const teamOptions = teams
+    const options = teams
       .map(t => `<option value="${t.name}" ${t.name === p.team ? "selected" : ""}>${t.name}</option>`)
       .join("");
 
@@ -139,21 +140,21 @@ function renderPersonTable(individuals) {
         <td>${i+1}</td>
 
         <td>
-          <input type="text" class="name-input" data-id="${p.name}" value="${p.name}">
+          <input type="text" class="name-input" data-id="${p.id}" value="${p.name}">
         </td>
 
         <td>
-          <select class="team-select" data-id="${p.name}">
-            ${teamOptions}
+          <select class="team-select" data-id="${p.id}">
+            ${options}
           </select>
         </td>
 
         <td>
-          <input type="number" class="team-input" data-id="${p.name}" value="${p.teamPoints}">
+          <input type="number" class="team-input" data-id="${p.id}" value="${p.teamPoints}">
         </td>
 
         <td>
-          <input type="number" class="pers-input" data-id="${p.name}" value="${p.personalPoints}">
+          <input type="number" class="pers-input" data-id="${p.id}" value="${p.personalPoints}">
         </td>
 
         <td>${p.totalScore}</td>
@@ -166,31 +167,26 @@ function renderPersonTable(individuals) {
 
 
 /*********************************************
- * EVENT LISTENERS — with auto-save!
+ * EVENT LISTENERS — now use permanent IDs
  *********************************************/
 function addListeners(individuals) {
 
-  // Name editing
+  // Edit name
   document.querySelectorAll(".name-input").forEach(input => {
     input.addEventListener("input", () => {
-      const person = individuals.find(p => p.memberRef.name === input.dataset.id);
+      const person = individuals.find(p => p.id === input.dataset.id);
       person.memberRef.name = input.value;
-
       saveData();
       render();
     });
   });
 
-  // Team changes
+  // Change team
   document.querySelectorAll(".team-select").forEach(sel => {
     sel.addEventListener("change", () => {
+      const person = individuals.find(p => p.id === sel.dataset.id);
 
-      const person = individuals.find(p => p.memberRef.name === sel.dataset.id);
-
-      // Remove from old team
-      person.teamRef.members = person.teamRef.members.filter(m => m !== person.memberRef);
-
-      // Add to new team
+      person.teamRef.members = person.teamRef.members.filter(m => m.id !== person.id);
       const newTeam = teams.find(t => t.name === sel.value);
       newTeam.members.push(person.memberRef);
 
@@ -199,10 +195,10 @@ function addListeners(individuals) {
     });
   });
 
-  // Team points
+  // Edit team points
   document.querySelectorAll(".team-input").forEach(input => {
     input.addEventListener("input", () => {
-      const person = individuals.find(p => p.memberRef.name === input.dataset.id);
+      const person = individuals.find(p => p.id === input.dataset.id);
       person.memberRef.teamPoints = Number(input.value);
 
       saveData();
@@ -210,10 +206,10 @@ function addListeners(individuals) {
     });
   });
 
-  // Personal points
+  // Edit personal points
   document.querySelectorAll(".pers-input").forEach(input => {
     input.addEventListener("input", () => {
-      const person = individuals.find(p => p.memberRef.name === input.dataset.id);
+      const person = individuals.find(p => p.id === input.dataset.id);
       person.memberRef.personalPoints = Number(input.value);
 
       saveData();
