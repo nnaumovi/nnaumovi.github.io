@@ -3,57 +3,63 @@ body {
   font-family: "Inter", Arial, sans-serif;
   background: #faf4e8; /* soft cream */
   margin: 0;
-  padding: 40px;
+  padding: 20px;
   color: #4b3a2f; /* warm brown */
 }
 
 /* HEADERS */
 h1 {
   text-align: center;
-  margin-bottom: 40px;
-  font-size: 2.6rem;
+  margin-bottom: 20px;
+  font-size: 2.2rem;
   font-weight: 800;
-  color: #7b3f00; /* pumpkin brown */
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: #7b3f00;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
 
 h2 {
-  margin-top: 40px;
-  font-size: 1.9rem;
-  color: #8a4b1a; /* rustic orange-brown */
-  border-left: 6px solid #d67f2e; /* fall orange */
-  padding-left: 12px;
+  margin-top: 30px;
+  font-size: 1.6rem;
+  color: #8a4b1a;
+  border-left: 6px solid #d67f2e;
+  padding-left: 10px;
 }
 
-/* TABLE CONTAINER */
+/* TABLE WRAPPER FOR MOBILE SCROLL */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 0 auto 40px auto;
+}
+
+/* TABLE */
 table {
-  width: 95%;
-  max-width: 900px;
-  margin: 30px auto;
+  width: 100%;
+  min-width: 650px; /* ensures it doesn't collapse too much */
   border-collapse: separate;
   border-spacing: 0;
-  background: #fffdf8; /* soft parchment */
+  background: #fffdf8;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(121, 70, 25, 0.15); /* warm brown shadow */
+  box-shadow: 0 4px 20px rgba(121, 70, 25, 0.15);
 }
 
-/* TABLE HEADER */
+/* HEADER */
 thead {
   background: linear-gradient(90deg, #d67f2e, #b35c1a);
   color: white;
 }
 
 th {
-  padding: 16px 14px;
+  padding: 14px 12px;
   font-size: 1rem;
   text-align: left;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
-/* TABLE BODY */
+/* BODY */
 td {
-  padding: 14px 14px;
+  padding: 12px 12px;
   border-bottom: 1px solid #f0e2d0;
 }
 
@@ -62,7 +68,7 @@ tr:last-child td {
 }
 
 tbody tr:hover {
-  background: #fff4e0; /* light fall orange */
+  background: #fff4e0;
 }
 
 /* INPUTS */
@@ -71,7 +77,7 @@ input[type="number"],
 select {
   width: 120px;
   padding: 7px 9px;
-  border: 1px solid #c7a98b; /* warm tan */
+  border: 1px solid #c7a98b;
   border-radius: 6px;
   font-size: 0.95rem;
   background: #fdf8f2;
@@ -82,40 +88,67 @@ input[type="text"]:focus,
 input[type="number"]:focus,
 select:focus {
   outline: none;
-  border-color: #d67f2e; /* fall orange */
+  border-color: #d67f2e;
   background: #fff;
   box-shadow: 0 0 0 2px rgba(214,127,46,0.25);
 }
 
-/* RANK NUMBER STYLING */
+/* RANK NUMBER */
 td:nth-child(1) {
   font-weight: 700;
   text-align: center;
-  width: 50px;
+  width: 40px;
   color: #5e3b1f;
 }
 
-/* Thanksgiving-themed rank colors */
-tbody tr:nth-child(1) td:nth-child(1) {
-  color: #c47f26; /* golden pumpkin */
-}
-tbody tr:nth-child(2) td:nth-child(1) {
-  color: #8c6a4a; /* soft walnut */
-}
-tbody tr:nth-child(3) td:nth-child(1) {
-  color: #b56b2a; /* bronze pumpkin */
-}
+/* GOLD, SILVER, BRONZE RANK COLORS */
+tbody tr:nth-child(1) td:nth-child(1) { color: #c47f26; }
+tbody tr:nth-child(2) td:nth-child(1) { color: #8c6a4a; }
+tbody tr:nth-child(3) td:nth-child(1) { color: #b56b2a; }
 
-/* MOBILE */
+/* ---------------------------------------------------------
+   MOBILE RESPONSIVENESS
+--------------------------------------------------------- */
+
 @media (max-width: 700px) {
-  table {
-    width: 100%;
-    font-size: 0.85rem;
+
+  body {
+    padding: 10px;
   }
 
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  /* Table wrapper creates smooth sideways scroll */
+  .table-container {
+    border-radius: 14px;
+    overflow-x: auto;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+  }
+
+  /* Inputs expand to fill the available space */
   input[type="text"],
   input[type="number"],
   select {
-    width: 95px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 1rem;
+  }
+
+  /* Make table text slightly smaller */
+  table {
+    font-size: 0.9rem;
+  }
+
+  th, td {
+    padding: 10px 8px;
   }
 }
