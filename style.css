@@ -1,21 +1,118 @@
+/* GLOBAL */
 body {
-  font-family: Arial, sans-serif;
-  margin: 40px;
-  background: #fafafa;
+  font-family: "Inter", Arial, sans-serif;
+  background: #f3f4f7;
+  margin: 0;
+  padding: 40px;
+  color: #333;
 }
 
-table {
-  width: 80%;
-  border-collapse: collapse;
-  background: white;
+/* HEADERS */
+h1 {
+  text-align: center;
   margin-bottom: 40px;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #222;
 }
 
-th, td {
-  border: 1px solid #ccc;
-  padding: 8px 12px;
+h2 {
+  margin-top: 40px;
+  font-size: 1.8rem;
+  color: #444;
+  border-left: 5px solid #4A90E2;
+  padding-left: 10px;
 }
 
-input[type="text"], input[type="number"], select {
+/* TABLE LAYOUT */
+table {
+  width: 95%;
+  max-width: 900px;
+  margin: 30px auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* TABLE HEADER */
+thead {
+  background: #4A90E2;
+  color: white;
+}
+
+th {
+  padding: 14px 12px;
+  font-size: 1rem;
+  text-align: left;
+}
+
+/* TABLE BODY */
+td {
+  padding: 12px 12px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: #f5f9ff;
+}
+
+/* INPUTS */
+input[type="text"],
+input[type="number"],
+select {
   width: 120px;
+  padding: 6px 8px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: #f9f9f9;
+  transition: 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  outline: none;
+  border-color: #4A90E2;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(74,144,226,0.2);
+}
+
+/* RANK NUMBER STYLING */
+td:nth-child(1) {
+  font-weight: 700;
+  text-align: center;
+  width: 50px;
+}
+
+/* Gold, Silver, Bronze ranks */
+tbody tr:nth-child(1) td:nth-child(1) {
+  color: #d4a637;
+}
+tbody tr:nth-child(2) td:nth-child(1) {
+  color: #8892a0;
+}
+tbody tr:nth-child(3) td:nth-child(1) {
+  color: #cd7f32;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 700px) {
+  table {
+    width: 100%;
+    font-size: 0.85rem;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select {
+    width: 90px;
+  }
 }
