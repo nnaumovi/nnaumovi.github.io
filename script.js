@@ -6,27 +6,9 @@ function createId() {
 }
 
 /*********************************************
- * LOCAL STORAGE HELPERS
- *********************************************/
-function saveData() {
-  localStorage.setItem("thanksgivingScoreboard", JSON.stringify(teams));
-}
-
-function loadData() {
-  const saved = localStorage.getItem("thanksgivingScoreboard");
-  if (saved) {
-    try {
-      teams = JSON.parse(saved);
-    } catch (e) {
-      console.error("Error loading saved data", e);
-    }
-  }
-}
-
-/*********************************************
  * INITIAL DATA
  *********************************************/
-let teams = [
+let defaultTeams = [
   { name: "Team 1", members: [ 
     {id:createId(), name:"A1", teamPoints:0, personalPoints:0},
     {id:createId(), name:"A2", teamPoints:0, personalPoints:0},
@@ -69,8 +51,29 @@ let teams = [
   ]}
 ];
 
-// Load saved data if exists
-loadData();
+// Actual working teams
+let teams = JSON.parse(JSON.stringify(defaultTeams)); // deep copy
+
+/*********************************************
+ * LOCAL STORAGE HELPERS
+ *********************************************/
+function saveData() {
+  localStorage.setItem("thanksgivingScoreboard", JSON.stringify(teams));
+}
+
+function loadData() {
+  const saved = localStorage.getItem("thanksgivingScoreboard");
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].members) {
+        teams = parsed;
+      }
+    } catch (e) {
+      console.error("Error loading saved data", e);
+    }
+  }
+}
 
 /*********************************************
  * COMPUTE RANKINGS & TOTAL SCORES
@@ -116,6 +119,7 @@ function render() {
 
 function renderTeamTable(teamRankings) {
   const tbody = document.querySelector("#team-table tbody");
+  if (!tbody) return;
   tbody.innerHTML = "";
   teamRankings.forEach((t, i) => {
     tbody.insertAdjacentHTML("beforeend", `
@@ -130,6 +134,7 @@ function renderTeamTable(teamRankings) {
 
 function renderPersonTable(individuals) {
   const tbody = document.querySelector("#person-table tbody");
+  if (!tbody) return;
   tbody.innerHTML = "";
 
   individuals.forEach((p, i) => {
@@ -201,80 +206,35 @@ function addListeners(individuals) {
   });
 }
 
-document.getElementById("reset-btn").addEventListener("click", () => {
+/*********************************************
+ * RESET BUTTONS
+ *********************************************/
+document.getElementById("reset-btn")?.addEventListener("click", () => {
   if (!confirm("Are you sure you want to reset the scoreboard? This cannot be undone.")) return;
 
-  // Clear localStorage
-  localStorage.removeItem("thanksgivingScoreboard");
-
-  // Reset default teams & members
-  teams = [
-    { name: "Team 1", members: [ 
-      {id:createId(), name:"A1", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"A2", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"A3", teamPoints:0, personalPoints:0}
-    ]},
-    { name: "Team 2", members: [
-      {id:createId(), name:"B1", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"B2", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"B3", teamPoints:0, personalPoints:0}
-    ]},
-    { name: "Team 3", members: [
-      {id:createId(), name:"C1", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"C2", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"C3", teamPoints:0, personalPoints:0}
-    ]},
-    { name: "Team 4", members: [
-      {id:createId(), name:"D1", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"D2", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"D3", teamPoints:0, personalPoints:0}
-    ]},
-    { name: "Team 5", members: [
-      {id:createId(), name:"E1", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"E2", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"E3", teamPoints:0, personalPoints:0}
-    ]},
-    { name: "Team 6", members: [
-      {id:createId(), name:"F1", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"F2", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"F3", teamPoints:0, personalPoints:0}
-    ]},
-    { name: "Team 7", members: [
-      {id:createId(), name:"G1", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"G2", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"G3", teamPoints:0, personalPoints:0}
-    ]},
-    { name: "Team 8", members: [
-      {id:createId(), name:"H1", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"H2", teamPoints:0, personalPoints:0},
-      {id:createId(), name:"H3", teamPoints:0, personalPoints:0}
-    ]}
-  ];
-
+  // Reset teams to default and save
+  teams = JSON.parse(JSON.stringify(defaultTeams));
+  saveData();
   render();
 });
 
-document.getElementById("reset-scores-btn").addEventListener("click", () => {
+document.getElementById("reset-scores-btn")?.addEventListener("click", () => {
   if (!confirm("Are you sure you want to reset all scores to zero? Names and teams will remain.")) return;
 
-  // Loop through all teams and members, reset points
   teams.forEach(team => {
     team.members.forEach(member => {
       member.teamPoints = 0;
       member.personalPoints = 0;
     });
   });
-
-  // Save the reset scores
   saveData();
-
-  // Re-render tables
   render();
 });
 
-
-
 /*********************************************
- * INITIAL RENDER
+ * INITIAL LOAD
  *********************************************/
-render();
+document.addEventListener("DOMContentLoaded", () => {
+  loadData();
+  render();
+});
