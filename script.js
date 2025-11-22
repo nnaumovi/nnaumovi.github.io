@@ -1,52 +1,41 @@
-// ---------------------------
-// DATA SECTION (example)
-// ---------------------------
+// -----------------------------------
+// INITIAL DATA (8 teams, 3 people each)
+// -----------------------------------
 let teams = [
-  {
-    name: "Team 1",
-    members: [
-      { name: "Alice", teamPoints: 5, personalPoints: 10 },
-      { name: "Bob", teamPoints: 8, personalPoints: 7 },
-      { name: "Charlie", teamPoints: 6, personalPoints: 4 },
-      { name: "Diana", teamPoints: 7, personalPoints: 9 }
-    ]
-  },
-  {
-    name: "Team 2",
-    members: [
-      { name: "Eve", teamPoints: 11, personalPoints: 4 },
-      { name: "Frank", teamPoints: 3, personalPoints: 5 },
-      { name: "Grace", teamPoints: 9, personalPoints: 2 },
-      { name: "Henry", teamPoints: 4, personalPoints: 6 }
-    ]
-  },
-
-  // Add teams 3–8...
+  { name: "Team 1", members: [ {name:"A1",teamPoints:0,personalPoints:0}, {name:"A2",teamPoints:0,personalPoints:0}, {name:"A3",teamPoints:0,personalPoints:0} ]},
+  { name: "Team 2", members: [ {name:"B1",teamPoints:0,personalPoints:0}, {name:"B2",teamPoints:0,personalPoints:0}, {name:"B3",teamPoints:0,personalPoints:0} ]},
+  { name: "Team 3", members: [ {name:"C1",teamPoints:0,personalPoints:0}, {name:"C2",teamPoints:0,personalPoints:0}, {name:"C3",teamPoints:0,personalPoints:0} ]},
+  { name: "Team 4", members: [ {name:"D1",teamPoints:0,personalPoints:0}, {name:"D2",teamPoints:0,personalPoints:0}, {name:"D3",teamPoints:0,personalPoints:0} ]},
+  { name: "Team 5", members: [ {name:"E1",teamPoints:0,personalPoints:0}, {name:"E2",teamPoints:0,personalPoints:0}, {name:"E3",teamPoints:0,personalPoints:0} ]},
+  { name: "Team 6", members: [ {name:"F1",teamPoints:0,personalPoints:0}, {name:"F2",teamPoints:0,personalPoints:0}, {name:"F3",teamPoints:0,personalPoints:0} ]},
+  { name: "Team 7", members: [ {name:"G1",teamPoints:0,personalPoints:0}, {name:"G2",teamPoints:0,personalPoints:0}, {name:"G3",teamPoints:0,personalPoints:0} ]},
+  { name: "Team 8", members: [ {name:"H1",teamPoints:0,personalPoints:0}, {name:"H2",teamPoints:0,personalPoints:0}, {name:"H3",teamPoints:0,personalPoints:0} ]}
 ];
 
-// ---------------------------
-// REBUILD RANKED DATA
-// ---------------------------
+// -----------------------------------
+// COMPUTE RANKINGS
+// -----------------------------------
 function computeRankings() {
-  // Team totals
-  var teamRankings = teams.map(team => {
-    const totalTeamScore = team.members.reduce((sum, m) => sum + Number(m.teamPoints), 0);
-    return { name: team.name, totalTeamScore };
-  });
+  // team totals
+  const teamRankings = teams.map(team => ({
+    name: team.name,
+    totalTeamScore: team.members.reduce((a, m) => a + Number(m.teamPoints), 0)
+  }));
 
   teamRankings.sort((a, b) => b.totalTeamScore - a.totalTeamScore);
 
-  // Individual totals
+  // individuals
   let individuals = [];
   teams.forEach(team => {
     team.members.forEach(member => {
       individuals.push({
         name: member.name,
         team: team.name,
+        teamRef: team,
+        memberRef: member,
         teamPoints: Number(member.teamPoints),
         personalPoints: Number(member.personalPoints),
-        totalScore: Number(member.teamPoints) + Number(member.personalPoints),
-        ref: member // keep pointer so edits update the real data
+        totalScore: Number(member.teamPoints) + Number(member.personalPoints)
       });
     });
   });
@@ -56,12 +45,11 @@ function computeRankings() {
   return { teamRankings, individuals };
 }
 
-// ---------------------------
-// RENDER TABLES
-// ---------------------------
+// -----------------------------------
+// RENDER
+// -----------------------------------
 function render() {
   const { teamRankings, individuals } = computeRankings();
-
   renderTeamTable(teamRankings);
   renderPersonTable(individuals);
 }
@@ -69,16 +57,14 @@ function render() {
 function renderTeamTable(teamRankings) {
   const tbody = document.querySelector("#team-table tbody");
   tbody.innerHTML = "";
-
   teamRankings.forEach((t, i) => {
-    const row = `
+    tbody.insertAdjacentHTML("beforeend", `
       <tr>
-        <td>${i + 1}</td>
+        <td>${i+1}</td>
         <td>${t.name}</td>
         <td>${t.totalTeamScore}</td>
       </tr>
-    `;
-    tbody.insertAdjacentHTML("beforeend", row);
+    `);
   });
 }
 
@@ -87,44 +73,87 @@ function renderPersonTable(individuals) {
   tbody.innerHTML = "";
 
   individuals.forEach((p, i) => {
-    const row = `
+    const teamOptions = teams
+      .map(t => `<option value="${t.name}" ${t.name === p.team ? "selected" : ""}>${t.name}</option>`)
+      .join("");
+
+    tbody.insertAdjacentHTML("beforeend", `
       <tr>
-        <td>${i + 1}</td>
-        <td>${p.name}</td>
-        <td>${p.team}</td>
-        <td><input type="number" class="team-input" data-name="${p.name}" value="${p.teamPoints}"></td>
-        <td><input type="number" class="pers-input" data-name="${p.name}" value="${p.personalPoints}"></td>
+        <td>${i+1}</td>
+
+        <td>
+          <input type="text" class="name-input" data-id="${p.name}" value="${p.name}">
+        </td>
+
+        <td>
+          <select class="team-select" data-name="${p.name}">
+            ${teamOptions}
+          </select>
+        </td>
+
+        <td>
+          <input type="number" class="team-input" data-name="${p.name}" value="${p.teamPoints}">
+        </td>
+
+        <td>
+          <input type="number" class="pers-input" data-name="${p.name}" value="${p.personalPoints}">
+        </td>
+
         <td>${p.totalScore}</td>
       </tr>
-    `;
-    tbody.insertAdjacentHTML("beforeend", row);
+    `);
   });
 
-  addEventListeners(individuals);
+  addListeners(individuals);
 }
 
-// ---------------------------
-// HANDLE EDITS
-// ---------------------------
-function addEventListeners(individuals) {
+// -----------------------------------
+// EVENT LISTENERS
+// -----------------------------------
+function addListeners(individuals) {
+  // name changes
+  document.querySelectorAll(".name-input").forEach(input => {
+    input.addEventListener("input", () => {
+      const person = individuals.find(p => p.name === input.dataset.id);
+      person.memberRef.name = input.value;
+      render();
+    });
+  });
+
+  // change teams
+  document.querySelectorAll(".team-select").forEach(sel => {
+    sel.addEventListener("change", () => {
+      const person = individuals.find(p => p.name === sel.dataset.name);
+
+      // remove from old team
+      person.teamRef.members = person.teamRef.members.filter(m => m !== person.memberRef);
+
+      // add to new team
+      const newTeam = teams.find(t => t.name === sel.value);
+      newTeam.members.push(person.memberRef);
+
+      render();
+    });
+  });
+
+  // team point edits
   document.querySelectorAll(".team-input").forEach(input => {
-    input.addEventListener("input", e => {
+    input.addEventListener("input", () => {
       const person = individuals.find(p => p.name === input.dataset.name);
-      person.ref.teamPoints = Number(input.value);
+      person.memberRef.teamPoints = Number(input.value);
       render();
     });
   });
 
+  // personal point edits
   document.querySelectorAll(".pers-input").forEach(input => {
-    input.addEventListener("input", e => {
+    input.addEventListener("input", () => {
       const person = individuals.find(p => p.name === input.dataset.name);
-      person.ref.personalPoints = Number(input.value);
+      person.memberRef.personalPoints = Number(input.value);
       render();
     });
   });
 }
 
-// ---------------------------
-// INITIAL RENDER
-// ---------------------------
+// initial render
 render();
