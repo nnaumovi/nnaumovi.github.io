@@ -1,22 +1,79 @@
-// -----------------------------------
-// INITIAL DATA (8 teams, 3 people each)
-// -----------------------------------
+/*********************************************
+ * LOCAL STORAGE HELPERS
+ *********************************************/
+
+// Save entire data structure
+function saveData() {
+  localStorage.setItem("thanksgivingScoreboard", JSON.stringify(teams));
+}
+
+// Load existing data if it exists
+function loadData() {
+  const saved = localStorage.getItem("thanksgivingScoreboard");
+  if (saved) {
+    try {
+      teams = JSON.parse(saved);
+    } catch (e) {
+      console.error("Error loading saved data", e);
+    }
+  }
+}
+
+
+/*********************************************
+ * INITIAL DATA (only used if no save exists)
+ *********************************************/
 let teams = [
-  { name: "Team 1", members: [ {name:"A1",teamPoints:0,personalPoints:0}, {name:"A2",teamPoints:0,personalPoints:0}, {name:"A3",teamPoints:0,personalPoints:0} ]},
-  { name: "Team 2", members: [ {name:"B1",teamPoints:0,personalPoints:0}, {name:"B2",teamPoints:0,personalPoints:0}, {name:"B3",teamPoints:0,personalPoints:0} ]},
-  { name: "Team 3", members: [ {name:"C1",teamPoints:0,personalPoints:0}, {name:"C2",teamPoints:0,personalPoints:0}, {name:"C3",teamPoints:0,personalPoints:0} ]},
-  { name: "Team 4", members: [ {name:"D1",teamPoints:0,personalPoints:0}, {name:"D2",teamPoints:0,personalPoints:0}, {name:"D3",teamPoints:0,personalPoints:0} ]},
-  { name: "Team 5", members: [ {name:"E1",teamPoints:0,personalPoints:0}, {name:"E2",teamPoints:0,personalPoints:0}, {name:"E3",teamPoints:0,personalPoints:0} ]},
-  { name: "Team 6", members: [ {name:"F1",teamPoints:0,personalPoints:0}, {name:"F2",teamPoints:0,personalPoints:0}, {name:"F3",teamPoints:0,personalPoints:0} ]},
-  { name: "Team 7", members: [ {name:"G1",teamPoints:0,personalPoints:0}, {name:"G2",teamPoints:0,personalPoints:0}, {name:"G3",teamPoints:0,personalPoints:0} ]},
-  { name: "Team 8", members: [ {name:"H1",teamPoints:0,personalPoints:0}, {name:"H2",teamPoints:0,personalPoints:0}, {name:"H3",teamPoints:0,personalPoints:0} ]}
+  { name: "Team 1", members: [ 
+    {name:"A1",teamPoints:0,personalPoints:0},
+    {name:"A2",teamPoints:0,personalPoints:0},
+    {name:"A3",teamPoints:0,personalPoints:0}
+  ]},
+  { name: "Team 2", members: [
+    {name:"B1",teamPoints:0,personalPoints:0},
+    {name:"B2",teamPoints:0,personalPoints:0},
+    {name:"B3",teamPoints:0,personalPoints:0}
+  ]},
+  { name: "Team 3", members: [
+    {name:"C1",teamPoints:0,personalPoints:0},
+    {name:"C2",teamPoints:0,personalPoints:0},
+    {name:"C3",teamPoints:0,personalPoints:0}
+  ]},
+  { name: "Team 4", members: [
+    {name:"D1",teamPoints:0,personalPoints:0},
+    {name:"D2",teamPoints:0,personalPoints:0},
+    {name:"D3",teamPoints:0,personalPoints:0}
+  ]},
+  { name: "Team 5", members: [
+    {name:"E1",teamPoints:0,personalPoints:0},
+    {name:"E2",teamPoints:0,personalPoints:0},
+    {name:"E3",teamPoints:0,personalPoints:0}
+  ]},
+  { name: "Team 6", members: [
+    {name:"F1",teamPoints:0,personalPoints:0},
+    {name:"F2",teamPoints:0,personalPoints:0},
+    {name:"F3",teamPoints:0,personalPoints:0}
+  ]},
+  { name: "Team 7", members: [
+    {name:"G1",teamPoints:0,personalPoints:0},
+    {name:"G2",teamPoints:0,personalPoints:0},
+    {name:"G3",teamPoints:0,personalPoints:0}
+  ]},
+  { name: "Team 8", members: [
+    {name:"H1",teamPoints:0,personalPoints:0},
+    {name:"H2",teamPoints:0,personalPoints:0},
+    {name:"H3",teamPoints:0,personalPoints:0}
+  ]}
 ];
 
-// -----------------------------------
-// COMPUTE RANKINGS
-// -----------------------------------
+// Load saved data (if any)
+loadData();
+
+
+/*********************************************
+ * COMPUTE RANKINGS
+ *********************************************/
 function computeRankings() {
-  // team totals
   const teamRankings = teams.map(team => ({
     name: team.name,
     totalTeamScore: team.members.reduce((a, m) => a + Number(m.teamPoints), 0)
@@ -24,7 +81,6 @@ function computeRankings() {
 
   teamRankings.sort((a, b) => b.totalTeamScore - a.totalTeamScore);
 
-  // individuals
   let individuals = [];
   teams.forEach(team => {
     team.members.forEach(member => {
@@ -45,9 +101,10 @@ function computeRankings() {
   return { teamRankings, individuals };
 }
 
-// -----------------------------------
-// RENDER
-// -----------------------------------
+
+/*********************************************
+ * RENDERING
+ *********************************************/
 function render() {
   const { teamRankings, individuals } = computeRankings();
   renderTeamTable(teamRankings);
@@ -86,17 +143,17 @@ function renderPersonTable(individuals) {
         </td>
 
         <td>
-          <select class="team-select" data-name="${p.name}">
+          <select class="team-select" data-id="${p.name}">
             ${teamOptions}
           </select>
         </td>
 
         <td>
-          <input type="number" class="team-input" data-name="${p.name}" value="${p.teamPoints}">
+          <input type="number" class="team-input" data-id="${p.name}" value="${p.teamPoints}">
         </td>
 
         <td>
-          <input type="number" class="pers-input" data-name="${p.name}" value="${p.personalPoints}">
+          <input type="number" class="pers-input" data-id="${p.name}" value="${p.personalPoints}">
         </td>
 
         <td>${p.totalScore}</td>
@@ -107,53 +164,66 @@ function renderPersonTable(individuals) {
   addListeners(individuals);
 }
 
-// -----------------------------------
-// EVENT LISTENERS
-// -----------------------------------
+
+/*********************************************
+ * EVENT LISTENERS — with auto-save!
+ *********************************************/
 function addListeners(individuals) {
-  // name changes
+
+  // Name editing
   document.querySelectorAll(".name-input").forEach(input => {
     input.addEventListener("input", () => {
-      const person = individuals.find(p => p.name === input.dataset.id);
+      const person = individuals.find(p => p.memberRef.name === input.dataset.id);
       person.memberRef.name = input.value;
+
+      saveData();
       render();
     });
   });
 
-  // change teams
+  // Team changes
   document.querySelectorAll(".team-select").forEach(sel => {
     sel.addEventListener("change", () => {
-      const person = individuals.find(p => p.name === sel.dataset.name);
 
-      // remove from old team
+      const person = individuals.find(p => p.memberRef.name === sel.dataset.id);
+
+      // Remove from old team
       person.teamRef.members = person.teamRef.members.filter(m => m !== person.memberRef);
 
-      // add to new team
+      // Add to new team
       const newTeam = teams.find(t => t.name === sel.value);
       newTeam.members.push(person.memberRef);
 
+      saveData();
       render();
     });
   });
 
-  // team point edits
+  // Team points
   document.querySelectorAll(".team-input").forEach(input => {
     input.addEventListener("input", () => {
-      const person = individuals.find(p => p.name === input.dataset.name);
+      const person = individuals.find(p => p.memberRef.name === input.dataset.id);
       person.memberRef.teamPoints = Number(input.value);
+
+      saveData();
       render();
     });
   });
 
-  // personal point edits
+  // Personal points
   document.querySelectorAll(".pers-input").forEach(input => {
     input.addEventListener("input", () => {
-      const person = individuals.find(p => p.name === input.dataset.name);
+      const person = individuals.find(p => p.memberRef.name === input.dataset.id);
       person.memberRef.personalPoints = Number(input.value);
+
+      saveData();
       render();
     });
   });
 }
 
-// initial render
+
+/*********************************************
+ * INITIAL RENDER
+ *********************************************/
 render();
